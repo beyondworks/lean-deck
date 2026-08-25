@@ -132,8 +132,8 @@ slides[0].render(THEMES.brutalism);
 | `Card` | The primitive. Compose your own layouts with it. |
 | `Tag` `Accent` `Warn` | Inline pieces. |
 
-Helpers: `bleed(padding)` pulls a card group left by its own padding so the card *text* keeps
-the alignment line; `RAIL` is the distance from the alignment line to the text of a quote or caption.
+Constants: `CARD_PAD` is the inset from a card's border to its text; `RAIL` is the gap between an
+accent bar and the text that follows it.
 
 ![components](docs/components/slide-7.png)
 
@@ -141,9 +141,10 @@ the alignment line; `RAIL` is the distance from the alignment line to the text o
 
 ## Three rules the kit enforces
 
-**One alignment line.** The eyebrow tag, the title, the text inside every card, and the accent
-bar of quotes and captions all start at the same x. Cards bleed left by their own padding
-so their content lands on the line rather than their corner.
+**One alignment line.** The eyebrow badge's border, the title, every card's left border, and the
+accent bar of a caption all sit at the same x. Inside a card, the text sits one `CARD_PAD`
+further in — and the bullet dot of a list starts where that text starts, so nothing is nudged
+off the line by a marker.
 
 ![alignment](docs/components/slide-4.png)
 

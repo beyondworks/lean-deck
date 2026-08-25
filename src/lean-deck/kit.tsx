@@ -7,16 +7,17 @@ export const CODE_BG = 'rgba(125,128,140,0.14)';
 
 /**
  * 조판 규칙 (2026-08-25)
- *  ① 정렬선 — 태그·제목·카드 안 글자가 모두 같은 x(정렬선)에서 시작한다.
- *     카드는 자기 padding 만큼 정렬선 왼쪽으로 나간다(bleed).
- *     인용·꼬리말은 '인용 표시(바)부터' 시작한다 — 바가 정렬선에 서고 글자는 그 뒤(RAIL).
- *  ② 깊이 — 양각(t.card)은 표면에 놓인 실체, 음각(t.cardHi)은 안에 담긴 것
+ *  ① 정렬선 — 뱃지 테두리·헤더 타이틀·카드의 왼쪽 테두리가 같은 x(정렬선)에 선다.
+ *     카드 안의 글자는 카드 텍스트 라인(정렬선 + PAD)에 선다.
+ *  ② 표시는 글자를 밀지 않는다 — 불릿 점은 카드 큰 글씨의 왼쪽에서 시작하고,
+ *     인용·꼬리말의 바는 카드 텍스트 라인 안쪽 여백에 걸린다. 글자는 언제나 라인 위.
+ *  ③ 깊이 — 양각(t.card)은 표면에 놓인 실체, 음각(t.cardHi)은 안에 담긴 것
  *     (인용문·이전 상태·아이콘 그릇). 깊이로 강조하지 않는다.
- *  ③ 강조 — 카드에 테두리·깊이 차이를 주지 않는다. 같은 층의 카드는 같은 모양이다.
+ *  ④ 강조 — 카드에 테두리·깊이 차이를 주지 않는다. 같은 층의 카드는 같은 모양이다.
  *     구분이 필요하면 라벨색·글자 굵기·문장 자체로 한다.
  */
-export const RAIL = 26;
-export const bleed = (pad: number) => ({ marginLeft: -pad, marginRight: -pad });
+export const RAIL = 16;   // 인용 표시(바)와 글자 사이. 바는 카드 테두리에서 CARD_PAD-RAIL 떨어진다
+export const CARD_PAD = 42;   // 모든 카드의 안쪽 여백. 카드 안 글자 = 정렬선 + CARD_PAD
 
 export function Base({ t, center, wide, children }: { t: Theme; center?: boolean; wide?: boolean; children: React.ReactNode }) {
   // 한글: 음절 단위 줄바꿈 방지. 하위 요소가 상속받는다
@@ -63,7 +64,7 @@ export function Head({ t, eyebrow, pre, accent, post, size = 52 }: { t: Theme; e
 
 export function Tail({ t, children }: { t: Theme; children: React.ReactNode }) {
   return (
-    <div style={{ position: 'relative', marginTop: 36, paddingLeft: RAIL }}>
+    <div style={{ position: 'relative', marginTop: 36, paddingLeft: RAIL + 4 }}>
       <div style={{ position: 'absolute', left: 0, top: 3, bottom: 3, minHeight: 26, width: 4, borderRadius: 4, background: t.bar }} />
       <p style={{ fontSize: 22, lineHeight: 1.6, margin: 0, color: t.ink.soft }}>{children}</p>
     </div>
@@ -72,21 +73,21 @@ export function Tail({ t, children }: { t: Theme; children: React.ReactNode }) {
 
 // hi 는 더 이상 카드 외형을 바꾸지 않는다 (기존 덱들이 넘겨 오므로 프로프만 유지)
 export const Card = ({ t, inset, style, children }: { t: Theme; hi?: boolean; inset?: boolean; style?: React.CSSProperties; children: React.ReactNode }) => (
-  <div style={{ boxSizing: 'border-box', padding: 42, ...(inset ? t.cardHi : t.card), ...style }}>{children}</div>
+  <div style={{ boxSizing: 'border-box', padding: CARD_PAD, ...(inset ? t.cardHi : t.card), ...style }}>{children}</div>
 );
 
 // N열 카드 (idx 라벨 + 제목 + 불릿 rows). hi로 강조 열 지정
 export function Cols({ t, items }: { t: Theme; items: { idx?: string; title: string; rows?: string[]; hi?: boolean; mono0?: boolean }[] }) {
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: `repeat(${items.length},1fr)`, gap: 24, alignItems: 'stretch', ...bleed(42) }}>
+    <div style={{ display: 'grid', gridTemplateColumns: `repeat(${items.length},1fr)`, gap: 24, alignItems: 'stretch' }}>
       {items.map((c, i) => (
         <Card key={i} t={t} hi={c.hi}>
           {c.idx && <p style={{ fontFamily: t.mono, fontSize: 16, letterSpacing: '.1em', margin: '0 0 18px', color: t.accent }}>{c.idx}</p>}
           <p style={{ fontSize: 34, fontWeight: 700, margin: '0 0 22px', color: t.ink.strong, wordBreak: 'keep-all', lineHeight: 1.4 }}>{c.title}</p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 13 }}>
             {(c.rows ?? []).map((r, j) => (
-              <div key={j} style={{ position: 'relative' }}>
-                <span style={{ position: 'absolute', left: -17, top: 13, width: 7, height: 7, borderRadius: '50%', background: t.accent }} />
+              <div key={j} style={{ position: 'relative', paddingLeft: 22 }}>
+                <span style={{ position: 'absolute', left: 0, top: 13, width: 7, height: 7, borderRadius: '50%', background: t.accent }} />
                 <span style={{ fontSize: 21, lineHeight: 1.6, color: t.ink.soft, wordBreak: 'keep-all', fontFamily: c.mono0 && j === 0 ? t.mono : t.font }}>{r}</span>
               </div>
             ))}
@@ -100,7 +101,7 @@ export function Cols({ t, items }: { t: Theme; items: { idx?: string; title: str
 // 가로 N단계 흐름 (n, title, desc, code?, hi?)
 export function Flow({ t, steps }: { t: Theme; steps: { n?: string | number; title: string; desc?: string; code?: string; hi?: boolean }[] }) {
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: `repeat(${steps.length},1fr)`, gap: 20, alignItems: 'stretch', ...bleed(42) }}>
+    <div style={{ display: 'grid', gridTemplateColumns: `repeat(${steps.length},1fr)`, gap: 20, alignItems: 'stretch' }}>
       {steps.map((s, i) => (
         <Card key={i} t={t} hi={s.hi} style={{ display: 'flex', flexDirection: 'column' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14 }}>
@@ -118,7 +119,7 @@ export function Flow({ t, steps }: { t: Theme; steps: { n?: string | number; tit
 // 체크리스트 (2열 그리드). item: {title, desc}
 export function Checklist({ t, items, cols = 2 }: { t: Theme; items: { title: string; desc?: string }[]; cols?: number }) {
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: `repeat(${cols},1fr)`, gap: 22, ...bleed(36) }}>
+    <div style={{ display: 'grid', gridTemplateColumns: `repeat(${cols},1fr)`, gap: 22 }}>
       {items.map((it, i) => (
         <Card key={i} t={t} style={{ padding: 36, display: 'flex', alignItems: 'flex-start', gap: 20 }}>
           <div style={{ width: 32, height: 32, borderRadius: 10, flexShrink: 0, marginTop: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', ...t.iconBox }}>
@@ -148,11 +149,11 @@ export function BigStat({ t, value, label, sub }: { t: Theme; value: string; lab
 // 풀폭 배너 (info=accent bar / warn=경고색)
 export function Banner({ t, kind = 'info', children }: { t: Theme; kind?: 'info' | 'warn'; children: React.ReactNode }) {
   const warn = kind === 'warn';
-  const PAD = 46;
+  const PAD = CARD_PAD;
   return (
-    <div style={{ position: 'relative', boxSizing: 'border-box', padding: `40px ${PAD}px`, ...bleed(PAD), ...(warn ? { ...t.card, ...t.warn, borderRadius: (t.card.borderRadius as number) ?? 14 } : t.card) }}>
-      <div style={{ position: 'absolute', left: PAD, top: 40, bottom: 40, width: 4, borderRadius: 4, background: warn ? (t.warn.color ?? t.bar) : t.bar }} />
-      <p style={{ paddingLeft: RAIL, fontSize: 31, lineHeight: 1.55, margin: 0, color: warn ? (t.warn.color ?? t.ink.strong) : t.ink.strong, wordBreak: 'keep-all', fontWeight: 500 }}>{children}</p>
+    <div style={{ position: 'relative', boxSizing: 'border-box', padding: `40px ${PAD}px`, ...(warn ? { ...t.card, ...t.warn, borderRadius: (t.card.borderRadius as number) ?? 14 } : t.card) }}>
+      <div style={{ position: 'absolute', left: PAD - RAIL, top: 40, bottom: 40, width: 4, borderRadius: 4, background: warn ? (t.warn.color ?? t.bar) : t.bar }} />
+      <p style={{ fontSize: 31, lineHeight: 1.55, margin: 0, color: warn ? (t.warn.color ?? t.ink.strong) : t.ink.strong, wordBreak: 'keep-all', fontWeight: 500 }}>{children}</p>
     </div>
   );
 }
@@ -160,17 +161,17 @@ export function Banner({ t, kind = 'info', children }: { t: Theme; kind?: 'info'
 // Before / After 2열 비교표 (rows: {label, before, after})
 export function Compare({ t, beforeLabel = '예전', afterLabel = '지금', rows }: { t: Theme; beforeLabel?: string; afterLabel?: string; rows: { label: string; before: string; after: string }[] }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 18, ...bleed(30) }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
       <div style={{ display: 'grid', gridTemplateColumns: '250px 1fr 1fr', gap: 20 }}>
         <span />
-        <span style={{ paddingLeft: 30, fontSize: 18, fontWeight: 600, color: t.ink.mute }}>{beforeLabel}</span>
-        <span style={{ paddingLeft: 30, fontSize: 18, fontWeight: 700, color: t.accent }}>{afterLabel}</span>
+        <span style={{ fontSize: 18, fontWeight: 600, color: t.ink.mute }}>{beforeLabel}</span>
+        <span style={{ fontSize: 18, fontWeight: 700, color: t.accent }}>{afterLabel}</span>
       </div>
       {rows.map((r, i) => (
         <div key={i} style={{ display: 'grid', gridTemplateColumns: '250px 1fr 1fr', gap: 20, alignItems: 'stretch' }}>
-          <div style={{ display: 'flex', alignItems: 'center', paddingLeft: 30, fontSize: 23, fontWeight: 600, color: t.ink.soft, wordBreak: 'keep-all' }}>{r.label}</div>
-          <Card t={t} inset style={{ padding: 30, display: 'flex', alignItems: 'center' }}><span style={{ fontSize: 22, lineHeight: 1.5, color: t.ink.mute, wordBreak: 'keep-all' }}>{r.before}</span></Card>
-          <Card t={t} style={{ padding: 30, display: 'flex', alignItems: 'center' }}><span style={{ fontSize: 22, lineHeight: 1.5, color: t.ink.strong, fontWeight: 600, wordBreak: 'keep-all' }}>{r.after}</span></Card>
+          <div style={{ display: 'flex', alignItems: 'center', fontSize: 23, fontWeight: 600, color: t.ink.soft, wordBreak: 'keep-all' }}>{r.label}</div>
+          <Card t={t} inset style={{ padding: `30px ${CARD_PAD}px`, display: 'flex', alignItems: 'center' }}><span style={{ fontSize: 22, lineHeight: 1.5, color: t.ink.mute, wordBreak: 'keep-all' }}>{r.before}</span></Card>
+          <Card t={t} style={{ padding: `30px ${CARD_PAD}px`, display: 'flex', alignItems: 'center' }}><span style={{ fontSize: 22, lineHeight: 1.5, color: t.ink.strong, fontWeight: 600, wordBreak: 'keep-all' }}>{r.after}</span></Card>
         </div>
       ))}
     </div>

@@ -1,14 +1,14 @@
 'use client';
 import React from 'react';
 import type { Theme } from './themes';
-import { Base, Statement, Head, Tail, Cols, Flow, Checklist, Compare, Banner, BigStat, Card, bleed } from './kit';
+import { Base, Statement, Head, Tail, Cols, Flow, Checklist, Compare, Banner, BigStat, Card } from './kit';
 
 export type Slide = { title: string; render: (t: Theme) => React.JSX.Element };
 
 /** 세 칸짜리 형식 카드 — Card 를 직접 조립하는 예 */
 function Triptych({ t, cells }: { t: Theme; cells: [string, string][] }) {
   return (
-    <div style={{ display: 'flex', gap: 24, alignItems: 'stretch', ...bleed(42) }}>
+    <div style={{ display: 'flex', gap: 24, alignItems: 'stretch' }}>
       {cells.map(([label, body]) => (
         <Card key={label} t={t} style={{ flex: 1 }}>
           <div style={{ fontFamily: t.mono, fontSize: 17, letterSpacing: '.1em', color: t.ink.mute, marginBottom: 20 }}>{label}</div>
@@ -74,9 +74,9 @@ export const demoSlides: Slide[] = [
     title: 'Alignment',
     render: (t) => (
       <Base t={t}>
-        <Head t={t} eyebrow="One alignment line" pre="Tag, title and card text all start at" accent="the same x" post="." size={46} />
-        <Banner t={t}>Quotes and captions begin at the accent bar, not after it.</Banner>
-        <Tail t={t}>Cards bleed left by their own padding so their text lands on the line.</Tail>
+        <Head t={t} eyebrow="One alignment line" pre="Badge, title and card border all sit on" accent="the same x" post="." size={46} />
+        <Banner t={t}>Quotes and captions begin at their accent bar, never after it.</Banner>
+        <Tail t={t}>Cards sit on the line; the text inside them sits one CARD_PAD further in.</Tail>
       </Base>
     ),
   },
@@ -99,8 +99,8 @@ export const demoSlides: Slide[] = [
     render: (t) => (
       <Base t={t} wide>
         <Head t={t} eyebrow="Composing by hand" pre="Card is the primitive;" accent="the rest is layout" post="." size={48} />
-        <Triptych t={t} cells={[['SURFACE', 'Card'], ['RHYTHM', 'flex or grid'], ['BLEED', 'bleed(padding)']]} />
-        <Tail t={t}>bleed() pulls a card group left so its text keeps the alignment line.</Tail>
+        <Triptych t={t} cells={[['SURFACE', 'Card'], ['RHYTHM', 'flex or grid'], ['INSET', 'CARD_PAD']]} />
+        <Tail t={t}>Cards sit on the alignment line; their text sits one CARD_PAD inside it.</Tail>
       </Base>
     ),
   },
