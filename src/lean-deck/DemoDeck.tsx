@@ -74,9 +74,9 @@ export const demoSlides: Slide[] = [
     title: 'Alignment',
     render: (t) => (
       <Base t={t}>
-        <Head t={t} eyebrow="One alignment line" pre="Badge, title and card border all sit on" accent="the same x" post="." size={46} />
-        <Banner t={t}>Quotes and captions begin at their accent bar, never after it.</Banner>
-        <Tail t={t}>Cards sit on the line; the text inside them sits one CARD_PAD further in.</Tail>
+        <Head t={t} eyebrow="Two lines, and only two" pre="Badge border, title and card border sit on" accent="the first" post="." size={46} />
+        <Banner t={t}>Card text, bullet dots and accent bars all sit on the second line.</Banner>
+        <Tail t={t}>A caption begins exactly where a quote begins — marker first, then the words.</Tail>
       </Base>
     ),
   },

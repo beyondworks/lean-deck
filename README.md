@@ -132,8 +132,8 @@ slides[0].render(THEMES.brutalism);
 | `Card` | The primitive. Compose your own layouts with it. |
 | `Tag` `Accent` `Warn` | Inline pieces. |
 
-Constants: `CARD_PAD` is the inset from a card's border to its text; `RAIL` is the gap between an
-accent bar and the text that follows it.
+Constants: `CARD_PAD` is the inset from a card's border to its text; `MARK` is the gap between a
+marker (bullet dot, accent bar) and the words that follow it.
 
 ![components](docs/components/slide-7.png)
 
@@ -141,10 +141,11 @@ accent bar and the text that follows it.
 
 ## Three rules the kit enforces
 
-**One alignment line.** The eyebrow badge's border, the title, every card's left border, and the
-accent bar of a caption all sit at the same x. Inside a card, the text sits one `CARD_PAD`
-further in — and the bullet dot of a list starts where that text starts, so nothing is nudged
-off the line by a marker.
+**Two lines, and only two.** The eyebrow badge's *border*, the title, and every card's left
+border sit on the first. The text inside a card, a list's bullet dot, a quote's accent bar and
+a caption's accent bar all sit on the second, one `CARD_PAD` further in — and the words that
+follow a dot or a bar start one `MARK` after it. A marker never nudges text off its line, and a
+caption begins exactly where a quote begins.
 
 ![alignment](docs/components/slide-4.png)
 
