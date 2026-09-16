@@ -5,6 +5,15 @@ import type { Theme } from './themes';
 // lean-deck 슬라이드 킷 — 전부 theme 토큰 구동. 어느 모피즘 테마든 동일 API로 렌더.
 export const CODE_BG = 'rgba(125,128,140,0.14)';
 
+/** A deck is an array of slides. Each slide is a pure function of the theme. */
+export type Slide = {
+  title: string;
+  /** The spoken line this slide belongs to — used to place <<N>> markers in a script. */
+  cue?: string;
+  render: (t: Theme) => React.JSX.Element;
+};
+export type Deck = Slide[];
+
 /**
  * 조판 규칙 (2026-08-25)
  *  ① 정렬선 — 뱃지 테두리·헤더 타이틀·카드의 왼쪽 테두리가 같은 x(정렬선)에 선다.

@@ -1,36 +1,135 @@
 # lean-deck
 
-**One slide API, seventeen design languages.**
+**Say it once. Wear any design language.**
 
-A slide deck is two things that keep getting tangled: *what you say* and *how it looks*.
-lean-deck keeps them in separate files. Slides never name a colour, a shadow, or a font —
-they read theme tokens. Change one string and the whole deck is wearing a different design language.
+A React slide kit where slides speak in **semantic tokens** and themes answer in values —
+seventeen design languages, infographic parts for explaining, and a pipeline that turns a talk
+script into a deck, a standalone HTML file and slide cues.
 
-```tsx
-<Statement t={theme} eyebrow="lean-deck"
-  pre="One slide API," accent="seventeen design languages" post="." />
-```
+![One slide rendered in glass, paper and neubrutalism](docs/hero.png)
 
-That slide renders as frosted glass, as pressed neumorphism, as a 1984 Macintosh window,
-or as neubrutalism — depending only on which theme object you hand it.
-
-![theme gallery](docs/gallery.png)
+[![release](https://img.shields.io/github/v/release/beyondworks/lean-deck?label=release)](https://github.com/beyondworks/lean-deck/releases)
+[![ci](https://github.com/beyondworks/lean-deck/actions/workflows/ci.yml/badge.svg)](https://github.com/beyondworks/lean-deck/actions/workflows/ci.yml)
+![license](https://img.shields.io/badge/license-MIT-black)
 
 ---
 
-## The same slide, seventeen ways
+## The idea
 
-Identical deck source. Only the theme id changed.
+A deck is two things that keep getting tangled: *what you say* and *how it looks*.
+lean-deck puts a third layer between them — a small vocabulary of **meanings** — and lets a slide
+see only that.
+
+![Three layers: deck, semantic tokens, theme](docs/concept.png)
+
+| Layer | Answers | File |
+|---|---|---|
+| **Deck** | what you say | `YourDeck.tsx` — a plain array of slides |
+| **Semantic tokens** | what things mean | `tokens.ts` — `surface.raised`, `text.soft`, `accent.marker` … |
+| **Theme** | how it looks | `themes.ts` — seventeen design languages |
+
+A slide asks for `surface.raised`, never `#16161b`. Change the theme id and every answer changes at once;
+the deck file is never opened.
+
+---
+
+## Semantic tokens
+
+![Pick a theme; the token names stay and the values move](docs/tokens.png)
+
+| Token | Meaning |
+|---|---|
+| `surface.page` | the slide background |
+| `surface.raised` | an object placed on the surface — a card |
+| `surface.inset` | something held inside — a quote, a prior state, a chip |
+| `surface.badge` · `surface.well` | the eyebrow pill · the square behind an icon |
+| `text.strong` · `text.soft` · `text.mute` | three levels of ink |
+| `accent.primary` · `accent.secondary` | the theme's two signal colours |
+| `accent.title` · `accent.marker` · `accent.icon` | the accented phrase in a title · bullet and caption bars · icon strokes |
+| `status.warn` | a problem, a missing thing |
+| `ambient.grid` · `ambient.orbs` | optional background texture |
+| `font.body` · `font.mono` | type families |
+
+Write a new theme by meaning — it plugs straight into `THEMES`:
+
+```ts
+import { defineTheme } from '@/lean-deck/tokens';
+
+export const ink = defineTheme(
+  { id: 'ink', name: 'Ink', mood: 'Newsprint, one red' },
+  {
+    font:    { body: "'Inter', sans-serif", mono: 'monospace' },
+    surface: {
+      page:   { background: '#f6f3ea' },
+      raised: { background: '#fffdf7', borderRadius: 6 },
+      inset:  { background: '#ece7da', borderRadius: 6 },
+      badge:  { background: '#111', color: '#fff', borderRadius: 999, padding: '7px 16px' },
+      well:   { background: '#ece7da', borderRadius: 8 },
+    },
+    text:    { strong: '#111', soft: '#111a', mute: '#1117' },
+    accent:  { primary: '#c8102e', secondary: '#111', title: { color: '#c8102e' }, marker: '#c8102e', icon: '#c8102e' },
+    status:  { warn: { bg: '#fff', border: 'none', color: '#c8102e' } },
+    ambient: { grid: null, orbs: null },
+  },
+);
+```
+
+Anything that is not a React slide — a page shell, an exported HTML wrapper, a chart — reads the same
+theme through CSS custom properties:
+
+```ts
+import { toCssVars } from '@/lean-deck/tokens';
+<div style={toCssVars(THEMES.paper)}>…</div>   // --ld-surface-page, --ld-text-soft, --ld-accent-primary …
+```
+
+`npm run check:tokens` proves that every built-in theme survives the round trip through the semantic layer.
+
+---
+
+## Viz — parts for explaining, not decorating
+
+Slides next to a speaker should not repeat the speaker. `viz.tsx` draws the thing instead:
+contrast as two panels, flow as arrowed steps, amount as bars, a decision as a fork, a file as a document mock.
+
+![viz parts](docs/viz.png)
+
+| Part | Draws |
+|---|---|
+| `Myth` + `Stamp` | a belief to test, with a verdict |
+| `Panel` · `Chip` · `Tile` | a titled card · an item it holds (`dim` = missing, `warn` = a problem) · an object in a space |
+| `Arrow` · `StepRow` | a transformation · steps with arrows |
+| `Bars` | amounts, last row highlighted |
+| `Fork` | one question, two branches |
+| `Doc` · `Lines` | a file mock · placeholder text lines |
+| `Source` · `Row` | one source line · a horizontal layout with ratios |
+
+One spacing scale keeps every slide balanced — `GAP 32` between cards, `STACK 22` inside a card,
+text at `19 / 25 / 29 / 36`. `npm run check:layout` renders both demo decks in every theme at 1920×1080
+and fails on text outside the frame or a last line holding a single orphaned word (340 frames, all clean for v2.0.0).
 
 | | |
 |---|---|
-| **Glass** — deep navy, frosted panes, mint glow | **Paper** — warm off-white, printed page |
+| ![](docs/viz/1-darkmorphism.png) | ![](docs/viz/2-paper.png) |
+| ![](docs/viz/4-neubrutalism.png) | ![](docs/viz/5-apple.png) |
+| ![](docs/viz/6-macintosh.png) | ![](docs/viz/3-claymorphism.png) |
+
+---
+
+## Seventeen design languages
+
+![theme gallery](docs/gallery.png)
+
+Identical deck source; only the theme id changed.
+
+| | |
+|---|---|
+| **Glass** — deep navy, frosted panes, mint glow | **Paper** — ink monochrome on a white page |
 | ![](docs/themes/glass.png) | ![](docs/themes/paper.png) |
 | **Neumorphism** — light grey, soft extrusion | **Darkmorphism** — dark grey extrusion, teal point |
 | ![](docs/themes/neumorphism.png) | ![](docs/themes/darkmorphism.png) |
 | **Macintosh** — System 6/7, hard drop shadow | **Claymorphism** — pastel, puffy clay |
 | ![](docs/themes/macintosh.png) | ![](docs/themes/claymorphism.png) |
-| **Flat** — no depth, colour blocks | **Material** — elevation and ripple language |
+| **Flat** — no depth, colour blocks | **Material** — elevation language |
 | ![](docs/themes/flat.png) | ![](docs/themes/material.png) |
 | **Fluent** — acrylic, Windows tone | **Apple** — system grey, quiet hierarchy |
 | ![](docs/themes/fluent.png) | ![](docs/themes/apple.png) |
@@ -54,122 +153,85 @@ npm install
 npm run dev
 ```
 
-Open <http://localhost:3000> for the theme gallery, or jump straight into the deck:
+| URL | What |
+|---|---|
+| <http://localhost:3000> | the idea, live tokens, viz parts, theme gallery |
+| `/deck?deck=demo&theme=glass` | the kit deck |
+| `/deck?deck=viz&theme=paper` | the viz deck |
+| `…&raw=1` | a bare 1920×1080 frame — screenshots, PDF, video, HTML export |
 
-```
-http://localhost:3000/deck?theme=glass
-```
-
-**Keys** — `←` `→` move between slides · `↑` `↓` swap the theme under the same content ·
-`\` toggles fullscreen · `Home` / `End` jump to the ends.
-Every modifier combination is passed through to the browser, so `Cmd+F` and `Cmd+P` still work.
-
-Add `&raw=1` to any deck URL to render a bare 1920×1080 frame with no chrome — that is how
-the screenshots above were taken, and how you export slides to PNG or feed them to a video pipeline.
+**Keys** — `←` `→` slides · `↑` `↓` theme, same slide · `Home` `End` · `\` fullscreen.
+Modifier combinations pass through, so `Cmd+F` and `Cmd+P` still work.
 
 ---
 
 ## Writing a deck
 
-A deck is an array. Each slide is a function of the theme.
+A deck is an array; each slide is a function of the theme.
 
 ```tsx
-import { Base, Statement, Head, Tail, Cols } from '@/lean-deck/kit';
-import type { Theme } from '@/lean-deck/themes';
+import { Base, Statement, Head, Tail, type Slide } from '@/lean-deck/kit';
+import { Row, Panel, Chip, Arrow } from '@/lean-deck/viz';
 
-export const slides = [
+export const slides: Slide[] = [
   {
     title: 'Cover',
-    render: (t: Theme) => (
-      <Statement t={t} eyebrow="Q3 review"
-        pre="We shipped" accent="four things" post="that mattered."
-        sub="And stopped two that did not."
-        foot="Product · October" />
+    render: (t) => (
+      <Statement t={t} eyebrow="Q3 review" pre="We shipped" accent="four things" post=" that mattered." />
     ),
   },
   {
-    title: 'What shipped',
-    render: (t: Theme) => (
-      <Base t={t}>
-        <Head t={t} eyebrow="What shipped" pre="Three of the four are" accent="already in use" post="." />
-        <Cols t={t} items={[
-          { idx: 'ONE',   title: 'Search that finishes your sentence', rows: ['Median 40 ms', 'No new index'] },
-          { idx: 'TWO',   title: 'Bulk import from a spreadsheet',     rows: ['Ten thousand rows a minute'] },
-          { idx: 'THREE', title: 'Weekly digest',                      rows: ['Opt-in, 31 % open rate'] },
-        ]} />
-        <Tail t={t}>The fourth landed on Friday and has no numbers yet.</Tail>
+    title: 'Before and after',
+    cue: 'Search used to time out.',            // the spoken line — anchors the <<N>> cue in a script
+    render: (t) => (
+      <Base t={t} wide>
+        <Head t={t} eyebrow="Search" pre="From timeouts to" accent="40 ms" post="." />
+        <Row cols="minmax(0,1fr) auto minmax(0,1fr)">
+          <Panel t={t} icon="x" label="Before"><Chip t={t} warn>12 s at p95</Chip></Panel>
+          <Arrow t={t} label="new index" />
+          <Panel t={t} icon="check" label="After"><Chip t={t} icon="bolt">40 ms at p95</Chip></Panel>
+        </Row>
+        <Tail t={t}>No new infrastructure.</Tail>
       </Base>
     ),
   },
 ];
 ```
 
-Render it with any theme:
+Show it with the viewer:
 
 ```tsx
-import { THEMES } from '@/lean-deck/themes';
-slides[0].render(THEMES.brutalism);
+import { DeckViewer } from '@/lean-deck/Viewer';
+<DeckViewer decks={{ q3: slides }} defaultTheme="paper" />   // /your-route?deck=q3&theme=glass
 ```
 
----
+### Kit components (`kit.tsx`)
 
-## Components
-
-`src/lean-deck/kit.tsx` — every one takes `t` (the theme) and nothing about styling.
-
-| Component | For |
-|---|---|
-| `Statement` | A full-bleed sentence. Covers, turning points, closings. |
-| `Base` | The slide frame — background, ambient wash, grid, content column. |
-| `Head` | Eyebrow tag plus an action title with one accented phrase. |
-| `Tail` | A closing caption on an accent bar. |
-| `Cols` | N cards in a row: index label, title, bullet lines. |
-| `Flow` | N numbered steps with optional code and description. |
-| `Checklist` | A ticked grid of items. |
-| `Compare` | Before/after rows — the "before" sits inset, the "after" raised. |
-| `Banner` | A pulled quote or a single instruction. |
-| `BigStat` | One enormous number. |
-| `Card` | The primitive. Compose your own layouts with it. |
-| `Tag` `Accent` `Warn` | Inline pieces. |
-
-Constants: `CARD_PAD` is the inset from a card's border to its text; `MARK` is the gap between a
-marker (bullet dot, accent bar) and the words that follow it.
+`Statement` · `Base` · `Head` · `Tail` · `Cols` · `Flow` · `Checklist` · `Compare` · `Banner` · `BigStat` · `Card` · `Tag` `Accent` `Warn`.
+Constants: `CARD_PAD` (card inset to text) and `MARK` (a marker to the words after it).
 
 ![components](docs/components/slide-7.png)
 
----
+### Three rules the kit enforces
 
-## Three rules the kit enforces
-
-**Two lines, and only two.** The eyebrow badge's *border*, the title, and every card's left
-border sit on the first. The text inside a card, a list's bullet dot, a quote's accent bar and
-a caption's accent bar all sit on the second, one `CARD_PAD` further in — and the words that
-follow a dot or a bar start one `MARK` after it. A marker never nudges text off its line, and a
-caption begins exactly where a quote begins.
+**Two lines, and only two.** The badge border, the title and every card's left border sit on the first.
+Card text, bullet dots, quote bars and caption bars sit on the second, one `CARD_PAD` in; words after a
+marker start one `MARK` later. A marker never nudges text off its line.
 
 ![alignment](docs/components/slide-4.png)
 
-**Depth means something.** Raised is an object placed on the surface; inset is a container
-holding something — a quote, a prior state, an icon well. Depth is never used for emphasis.
+**Depth means something.** Raised is an object on the surface; inset is a container holding something.
+Depth is never used for emphasis.
 
-**Emphasis is not a border.** No highlight rings, no coloured edges on one card out of three.
-Emphasis comes from wording, from the accent colour on a label, and from the accented phrase
-in the title.
+**Emphasis is not a border.** Emphasis comes from wording, from a label's accent colour, and from the
+accented phrase in the title.
 
----
+### Korean typography
 
-## Korean typography
-
-The kit is built for decks that mix Korean and Latin.
-
-- `word-break: keep-all` and `line-break: strict` are the default on every text surface,
-  so Korean wraps at word boundaries instead of breaking mid-word.
-- One type scale serves both scripts, which keeps the texture of a mixed line even.
-- A zero-width word joiner (`U+2060`) between an accented phrase and the particle that follows
-  keeps a one-syllable particle from being orphaned at the end of a line.
+`keep-all` and `line-break: strict` are the default on every text surface, one type scale serves Hangul and
+Latin, and a word joiner (`U+2060`, exported as `WJ`) keeps a particle attached to the accented phrase.
 
 ```tsx
-const WJ = '⁠';
 <Head t={t} eyebrow="예시" pre="셋 다 기능이 아니라" accent="상태" post={`${WJ}입니다.`} />
 ```
 
@@ -177,45 +239,58 @@ const WJ = '⁠';
 
 ---
 
-## Writing your own theme
+## Claude Code skill — script → deck → HTML → cues
 
-A theme is a plain object. Copy the closest one in `src/lean-deck/themes.ts`, change the tokens,
-add it to `THEMES` and `THEME_ORDER`. No component changes are needed — every slide picks it up.
+`skill/lean-deck` teaches Claude Code the whole workflow: read a talk script, plan slides in speaking order,
+draw with the viz parts, check every slide at 1920×1080, export standalone HTML, and write `<<N>>` cues
+back into the script.
 
-```ts
-mytheme: {
-  id: 'mytheme', name: 'My theme', mood: 'one line describing the feel',
-  font: "'Noto Sans KR', -apple-system, sans-serif",
-  mono: "'JetBrains Mono', monospace",
-  page:  { background: '#101014' },
-  grid:  null,                       // or { color, opacity } for a faint rule grid
-  orbs:  null,                       // or { tl, br } for corner ambient washes
-  ink:   { strong: '#f2f2f5', soft: 'rgba(242,242,245,.68)', mute: 'rgba(242,242,245,.44)' },
-  accent: '#7dd3fc', accent2: '#a78bfa',
-  heading: { color: '#7dd3fc' },     // style for the accented phrase in a title
-  card:    { background: '#16161b', borderRadius: 16 },        // raised — an object
-  cardHi:  { background: '#0d0d11', borderRadius: 16 },        // inset  — a container
-  tag:     { background: '#16161b', color: '#7dd3fc', borderRadius: 9999, padding: '9px 18px', fontWeight: 600 },
-  iconBox: { background: '#0d0d11', borderRadius: 10 }, iconColor: '#7dd3fc',
-  bar:     'linear-gradient(180deg,#7dd3fc,#a78bfa)',
-  warn:    { bg: '#16161b', border: 'none', color: '#f08a8a' },
-},
+```bash
+cp -r skill/lean-deck ~/.claude/skills/        # or unzip the skill asset from a release
 ```
+
+| Script | Does |
+|---|---|
+| `capture.js` | runs in the viewer page, collects each rendered slide |
+| `export_html.py` | receives the captures and writes one self-contained HTML deck (← → · click · F · `#N`) |
+| `insert_markers.py` | puts `<<N>>` and `(demo …)` lines before anchor sentences — refuses to run twice |
+| `check_markers.py` | verifies cues run 1..N and sums the demo minutes |
+
+Scripts keep spoken text under `## Script` (or `## 본문`); demo lines may be `(demo …)` or `(시연 …)`.
+
+---
+
+## Releases
+
+Versions follow [SemVer](https://semver.org/); changes are listed in [CHANGELOG.md](CHANGELOG.md).
+
+1. Bump `version` in `package.json` and add a matching `## [x.y.z]` section to `CHANGELOG.md`.
+2. Merge to `main` — CI runs `npm run check`, builds the site and packages the skill.
+3. Push the tag: `git tag vX.Y.Z && git push origin vX.Y.Z`.
+
+The release workflow refuses a tag that does not match `package.json`, then publishes a GitHub Release
+with the changelog section as notes and `lean-deck-skill-vX.Y.Z.zip` attached.
+Run it by hand from the Actions tab for a dry run that builds everything without publishing.
 
 ---
 
 ## What is in this repo
 
 ```
-src/lean-deck/themes.ts    17 themes + the Theme type
-src/lean-deck/kit.tsx      the slide components
-src/lean-deck/DemoDeck.tsx the deck in the screenshots
-src/app/page.tsx           theme gallery
-src/app/deck/page.tsx      the viewer (keys, scaling, raw export)
+src/lean-deck/themes.ts     17 themes · Theme type · resolveTheme
+src/lean-deck/tokens.ts     semantic layer · toSemantic · defineTheme · toCssVars
+src/lean-deck/kit.tsx       frame, title and card components · Slide / Deck types
+src/lean-deck/viz.tsx       infographic parts · spacing scale
+src/lean-deck/Viewer.tsx    reusable deck viewer
+src/lean-deck/DemoDeck.tsx  the kit deck
+src/lean-deck/VizDeck.tsx   the viz deck
+src/app/                    the site: overview page and /deck
+skill/lean-deck/            Claude Code skill and its scripts
+scripts/                    token check · release notes · skill packaging
 ```
 
-Next.js is only the harness for the viewer. `themes.ts` and `kit.tsx` depend on React alone —
-drop them into Vite, Remix, Astro, or a Remotion composition and they work unchanged.
+Next.js is only the harness. `themes.ts`, `tokens.ts`, `kit.tsx` and `viz.tsx` depend on React alone —
+drop them into Vite, Remix, Astro or a Remotion composition unchanged.
 
 ## License
 

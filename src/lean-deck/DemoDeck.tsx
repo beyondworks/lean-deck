@@ -1,9 +1,9 @@
 'use client';
 import React from 'react';
 import type { Theme } from './themes';
-import { Base, Statement, Head, Tail, Cols, Flow, Checklist, Compare, Banner, BigStat, Card } from './kit';
+import { Base, Statement, Head, Tail, Cols, Flow, Checklist, Compare, Banner, BigStat, Card, type Slide } from './kit';
 
-export type Slide = { title: string; render: (t: Theme) => React.JSX.Element };
+export type { Slide } from './kit';
 
 /** 세 칸짜리 형식 카드 — Card 를 직접 조립하는 예 */
 function Triptych({ t, cells }: { t: Theme; cells: [string, string][] }) {
@@ -63,7 +63,7 @@ export const demoSlides: Slide[] = [
         <Head t={t} eyebrow="What a theme holds" pre="A token for every" accent="decision a slide can make" post="." size={48} />
         <Flow t={t} steps={[
           { n: '1', title: 'page', code: 'background', desc: 'The ground the slide sits on' },
-          { n: '2', title: 'card / cardHi', code: 'raised · inset', desc: 'Surface material — the theme identity' },
+          { n: '2', title: 'card / cardHi', code: 'raised · inset', desc: 'The surface material' },
           { n: '3', title: 'ink', code: 'strong · soft · mute', desc: 'Three levels of text weight' },
           { n: '4', title: 'accent · bar', code: 'colour · gradient', desc: 'Highlight and rules' },
         ]} />
@@ -133,7 +133,7 @@ export const demoSlides: Slide[] = [
     render: (t) => (
       <Base t={t}>
         <BigStat t={t} value="17" label="DESIGN LANGUAGES"
-          sub="One deck, rendered seventeen ways. Append your own token set and it becomes eighteen." />
+          sub="One deck, seventeen ways. Add a theme and there are eighteen." />
       </Base>
     ),
   },

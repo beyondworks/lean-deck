@@ -1,0 +1,55 @@
+name: release
+
+# Push a tag `v<version>` to publish. `workflow_dispatch` runs the same steps as a dry run (no release).
+on:
+  push:
+    tags: ['v*.*.*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: npm ci
+
+      - name: Version agrees with the tag and the changelog
+        id: ver
+        run: |
+          version=$(node -p "require('./package.json').version")
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          if [ "${GITHUB_REF_TYPE}" = "tag" ] && [ "${GITHUB_REF_NAME}" != "v$version" ]; then
+            echo "tag ${GITHUB_REF_NAME} does not match package.json v$version"; exit 1
+          fi
+          node scripts/release-notes.mjs "$version" > release-notes.md
+
+      - run: npm run check
+      - run: npm run build
+      - name: Package the skill
+        id: pkg
+        run: echo "zip=$(bash scripts/package-skill.sh)" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: lean-deck-v${{ steps.ver.outputs.version }}
+          path: |
+            ${{ steps.pkg.outputs.zip }}
+            release-notes.md
+
+      - name: Publish the release
+        if: github.ref_type == 'tag'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${GITHUB_REF_NAME}" "${{ steps.pkg.outputs.zip }}" \
+            --title "lean-deck ${GITHUB_REF_NAME}" --notes-file release-notes.md --verify-tag

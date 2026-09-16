@@ -1,14 +1,21 @@
 {
   "name": "lean-deck",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": false,
   "license": "MIT",
-  "description": "Token-driven React slide deck kit — 17 design-language themes, one API",
+  "description": "Token-driven React slide kit \u2014 semantic tokens, 17 design languages, infographic parts, and a script-to-deck pipeline",
   "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "check:tokens": "node --experimental-strip-types --no-warnings scripts/check-tokens.mjs",
+    "check:skill": "python3 -m py_compile skill/lean-deck/scripts/*.py && node --check scripts/release-notes.mjs",
+    "check": "npm run typecheck && npm run check:tokens && npm run check:skill",
+    "package:skill": "bash scripts/package-skill.sh",
+    "release:notes": "node scripts/release-notes.mjs",
+    "check:layout": "node scripts/check-layout.mjs http://localhost:3000"
   },
   "dependencies": {
     "next": "^15.3.0",
@@ -20,5 +27,12 @@
     "@types/react": "^18.3.0",
     "@types/react-dom": "^18.3.0",
     "typescript": "^5.7.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/beyondworks/lean-deck.git"
+  },
+  "engines": {
+    "node": ">=22.6"
   }
 }

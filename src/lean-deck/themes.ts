@@ -310,3 +310,8 @@ export const THEME_ORDER = [
   'glass', 'paper', 'neumorphism', 'darkmorphism', 'macintosh', 'claymorphism',
   'flat', 'material', 'fluent', 'apple', 'minimalism', 'darkmode', 'card', 'gradient', 'typographic', 'brutalism', 'neubrutalism',
 ];
+
+/** Look a theme up by id. Unknown or empty ids fall back instead of throwing. */
+export function resolveTheme(id?: string | null, fallback = 'darkmorphism'): Theme {
+  return (id && THEMES[id]) || THEMES[fallback];
+}
