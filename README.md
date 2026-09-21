@@ -158,7 +158,21 @@ npm run dev
 | <http://localhost:3000> | the idea, live tokens, viz parts, theme gallery |
 | `/deck?deck=demo&theme=glass` | the kit deck |
 | `/deck?deck=viz&theme=paper` | the viz deck |
-| `…&raw=1` | a bare 1920×1080 frame — screenshots, PDF, video, HTML export |
+| `…&raw=1` | a bare 1920×1080 frame — screenshots, video, HTML export |
+| `…&print=1` | every slide stacked, one page each — what the PDF export prints |
+
+### PDF
+
+With the dev server running, one command prints a deck straight to PDF — one slide per 1920×1080 page,
+text kept as text (selectable, sharp at any zoom), no screenshots in between.
+
+```bash
+npm run export:pdf -- demo                       # → demo.pdf
+npm run export:pdf -- viz viz-paper.pdf --theme paper
+```
+
+Options: `--theme <id>` · `--base http://localhost:3000` · `--route /deck`. Needs Google Chrome (`CHROME_BIN` to override).
+Gradient-filled accent text prints in the solid accent colour, because PDF viewers such as Preview draw it as a box.
 
 **Keys** — `←` `→` slides · `↑` `↓` theme, same slide · `Home` `End` · `\` fullscreen.
 Modifier combinations pass through, so `Cmd+F` and `Cmd+P` still work.

@@ -11,7 +11,8 @@ import type { Deck } from './kit';
  *   ↑ ↓        previous / next theme, same slide
  *   Home End   first / last slide
  *   \          fullscreen
- *   raw=1      a bare 1920×1080 frame with no chrome — for screenshots, PDF, video and HTML export
+ *   raw=1      a bare 1920×1080 frame with no chrome — for screenshots, video and HTML export
+ *   print=1    every slide stacked, one page each — for PDF (scripts/export-pdf.mjs)
  *
  * Modifier combinations are passed through, so Cmd+F and Cmd+P still work.
  * The frame carries id="slide" so capture scripts can read the rendered markup.
@@ -71,6 +72,22 @@ export function DeckViewer({ decks, defaultDeck, defaultTheme = 'darkmorphism' }
 
   const slide = slides[i];
   const reset = <style>{`nextjs-portal{display:none!important} html,body{margin:0;padding:0;overflow:hidden}`}</style>;
+
+  // print=1 — every slide stacked as one 1920×1080 page each. scripts/export-pdf.mjs prints this to a vector PDF.
+  // Gradient-clipped text (background-clip:text) prints as solid boxes in Preview/CoreGraphics, so it prints in the accent colour.
+  if (sp.get('print') === '1') {
+    return (
+      <div id="deck" data-slides={slides.length}>
+        <style>{`nextjs-portal{display:none!important} html,body{margin:0;padding:0;background:#000}
+@page{size:1920px 1080px;margin:0}
+*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+[style*="background-clip: text"],[style*="background-clip:text"]{background:none!important;color:${theme.accent}!important;-webkit-text-fill-color:${theme.accent}!important}
+.page{width:1920px;height:1080px;position:relative;overflow:hidden;break-after:page}
+.page:last-child{break-after:auto}`}</style>
+        {slides.map((s, n) => <div key={n} className="page">{s.render(theme)}</div>)}
+      </div>
+    );
+  }
 
   if (sp.get('raw') === '1') {
     return (
