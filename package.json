@@ -15,7 +15,8 @@
     "check": "npm run typecheck && npm run check:tokens && npm run check:skill",
     "package:skill": "bash scripts/package-skill.sh",
     "release:notes": "node scripts/release-notes.mjs",
-    "check:layout": "node scripts/check-layout.mjs http://localhost:3000"
+    "check:layout": "node scripts/check-layout.mjs http://localhost:3000",
+    "export:pdf": "node scripts/export-pdf.mjs"
   },
   "dependencies": {
     "next": "^15.3.0",

@@ -29,6 +29,12 @@ export type Deck = Slide[];
 export const MARK = 22;   // 표시(불릿 점·인용 바)와 그 뒤 글자 사이
 export const CARD_PAD = 42;   // 모든 카드의 안쪽 여백. 카드 안 글자 = 정렬선 + CARD_PAD
 
+// 64px grid as plain line paths, not a CSS gradient or pattern — PDF viewers (Preview) draw tiled backgrounds coarse.
+const GRID = [
+  ...Array.from({ length: 17 }, (_, k) => `M0 ${k * 64 + 0.5}H1920`),
+  ...Array.from({ length: 30 }, (_, k) => `M${k * 64 + 0.5} 0V1080`),
+].join('');
+
 export function Base({ t, center, wide, children }: { t: Theme; center?: boolean; wide?: boolean; children: React.ReactNode }) {
   // 한글: 음절 단위 줄바꿈 방지. 하위 요소가 상속받는다
   const KO = { wordBreak: 'keep-all' as const, overflowWrap: 'normal' as const, lineBreak: 'strict' as const };
@@ -41,7 +47,9 @@ export function Base({ t, center, wide, children }: { t: Theme; center?: boolean
         </>
       )}
       {t.grid && (
-        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', opacity: t.grid.opacity, backgroundImage: `linear-gradient(${t.grid.color} 1px, transparent 1px), linear-gradient(90deg, ${t.grid.color} 1px, transparent 1px)`, backgroundSize: '64px 64px' }} />
+        <svg width={1920} height={1080} style={{ position: 'absolute', inset: 0, pointerEvents: 'none', opacity: t.grid.opacity }}>
+          <path d={GRID} stroke={t.grid.color} fill="none" />
+        </svg>
       )}
       <div style={{ position: 'relative', zIndex: 10, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: center ? 'center' : 'stretch', textAlign: center ? 'center' : 'left', padding: '0 104px', maxWidth: wide ? 1800 : 1440, margin: '0 auto' }}>
         {children}

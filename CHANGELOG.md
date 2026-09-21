@@ -7,6 +7,17 @@ Releasing: bump `version` in `package.json`, add a section below with the same n
 then push a tag `v<version>`. The release workflow checks that the tag, `package.json` and this file agree,
 builds the site, and publishes a GitHub Release with the Claude Code skill attached as a zip.
 
+## [Unreleased]
+
+### Added
+- **PDF export** — `npm run export:pdf -- <deck>` prints a whole deck to a vector PDF (one slide per 1920×1080 page)
+  through the new `?print=1` viewer mode and the Chrome DevTools protocol. No screenshots, no extra dependencies;
+  it fails when the page count does not match the slide count.
+
+### Changed
+- The background grid is drawn as line paths instead of a CSS gradient. It looks the same on screen
+  and no longer turns into coarse tiles in PDF viewers such as Preview.
+
 ## [2.0.0] — 2026-09-16
 
 ### Added
