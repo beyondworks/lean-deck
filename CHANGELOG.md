@@ -7,7 +7,7 @@ Releasing: bump `version` in `package.json`, add a section below with the same n
 then push a tag `v<version>`. The release workflow checks that the tag, `package.json` and this file agree,
 builds the site, and publishes a GitHub Release with the Claude Code skill attached as a zip.
 
-## [Unreleased]
+## [2.1.0] — 2026-09-21
 
 ### Added
 - **PDF export** — `npm run export:pdf -- <deck>` prints a whole deck to a vector PDF (one slide per 1920×1080 page)

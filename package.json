@@ -1,6 +1,6 @@
 {
   "name": "lean-deck",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "private": false,
   "license": "MIT",
   "description": "Token-driven React slide kit \u2014 semantic tokens, 17 design languages, infographic parts, and a script-to-deck pipeline",
