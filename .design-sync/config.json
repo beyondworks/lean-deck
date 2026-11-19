@@ -1,0 +1,139 @@
+{
+  "projectId": "0827079d-5225-4931-8d7d-ddaf6333f548",
+  "shape": "package",
+  "pkg": "lean-deck",
+  "globalName": "LeanDeck",
+  "srcDir": "../src/lean-deck",
+  "tsconfig": "../tsconfig.json",
+  "cssEntry": "fonts.css",
+  "buildCmd": ".design-sync/build-lib.sh",
+  "docsMap": {
+    "Base": "../.design-sync/groups/Layout.md",
+    "Row": "../.design-sync/groups/Layout.md",
+    "Card": "../.design-sync/groups/Layout.md",
+    "Panel": "../.design-sync/groups/Layout.md",
+    "Head": "../.design-sync/groups/Typography.md",
+    "Tail": "../.design-sync/groups/Typography.md",
+    "Statement": "../.design-sync/groups/Typography.md",
+    "Tag": "../.design-sync/groups/Typography.md",
+    "Accent": "../.design-sync/groups/Typography.md",
+    "Warn": "../.design-sync/groups/Typography.md",
+    "Label": "../.design-sync/groups/Typography.md",
+    "Txt": "../.design-sync/groups/Typography.md",
+    "Source": "../.design-sync/groups/Typography.md",
+    "Cols": "../.design-sync/groups/Blocks.md",
+    "Flow": "../.design-sync/groups/Blocks.md",
+    "Checklist": "../.design-sync/groups/Blocks.md",
+    "Compare": "../.design-sync/groups/Blocks.md",
+    "Banner": "../.design-sync/groups/Blocks.md",
+    "BigStat": "../.design-sync/groups/Blocks.md",
+    "Bars": "../.design-sync/groups/Viz.md",
+    "Fork": "../.design-sync/groups/Viz.md",
+    "Myth": "../.design-sync/groups/Viz.md",
+    "Doc": "../.design-sync/groups/Viz.md",
+    "Tile": "../.design-sync/groups/Viz.md",
+    "StepRow": "../.design-sync/groups/Viz.md",
+    "Lines": "../.design-sync/groups/Viz.md",
+    "Stamp": "../.design-sync/groups/Viz.md",
+    "Chip": "../.design-sync/groups/Viz.md",
+    "Arrow": "../.design-sync/groups/Viz.md",
+    "Glyph": "../.design-sync/groups/Icons.md",
+    "Icon": "../.design-sync/groups/Icons.md"
+  },
+  "overrides": {
+    "Base": {
+      "cardMode": "column"
+    },
+    "Head": {
+      "cardMode": "column"
+    },
+    "Tail": {
+      "cardMode": "column"
+    },
+    "Statement": {
+      "cardMode": "column"
+    },
+    "Cols": {
+      "cardMode": "column"
+    },
+    "Flow": {
+      "cardMode": "column"
+    },
+    "Checklist": {
+      "cardMode": "column"
+    },
+    "Compare": {
+      "cardMode": "column"
+    },
+    "Banner": {
+      "cardMode": "column"
+    },
+    "BigStat": {
+      "cardMode": "column"
+    },
+    "Bars": {
+      "cardMode": "column"
+    },
+    "Fork": {
+      "cardMode": "column"
+    },
+    "Myth": {
+      "cardMode": "column"
+    },
+    "Doc": {
+      "cardMode": "column"
+    },
+    "StepRow": {
+      "cardMode": "column"
+    },
+    "Panel": {
+      "cardMode": "column"
+    },
+    "Row": {
+      "cardMode": "column"
+    },
+    "Card": {
+      "cardMode": "column"
+    },
+    "Tile": {
+      "cardMode": "column"
+    },
+    "Source": {
+      "cardMode": "column"
+    },
+    "Tag": {
+      "cardMode": "column"
+    },
+    "Accent": {
+      "cardMode": "column"
+    },
+    "Warn": {
+      "cardMode": "column"
+    },
+    "Label": {
+      "cardMode": "column"
+    },
+    "Txt": {
+      "cardMode": "column"
+    },
+    "Lines": {
+      "cardMode": "column"
+    },
+    "Stamp": {
+      "cardMode": "column"
+    },
+    "Chip": {
+      "cardMode": "column"
+    },
+    "Arrow": {
+      "cardMode": "column"
+    },
+    "Glyph": {
+      "cardMode": "column"
+    },
+    "Icon": {
+      "cardMode": "column"
+    }
+  },
+  "readmeHeader": ".design-sync/conventions.md"
+}
